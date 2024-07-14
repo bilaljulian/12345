@@ -774,7 +774,7 @@ newWindow.document.body.innerHTML = clickCountContent;
         const moreButton = newWindow.document.getElementById(`more-button-${currentTab}`);
         moreButton.addEventListener('click', () => {
           currentPage++;
-          if (currentPage > 50) {
+          if (currentPage > 41) {
             currentPage = 1;
           }
           showPageContent(newWindow, currentPage);
@@ -785,7 +785,7 @@ newWindow.document.body.innerHTML = clickCountContent;
           e.preventDefault();
           currentPage--;
           if (currentPage < 1) {
-            currentPage = 50;
+            currentPage = 41;
           }
           showPageContent(newWindow, currentPage);
         });
@@ -794,7 +794,7 @@ newWindow.document.body.innerHTML = clickCountContent;
         nextLink.addEventListener('click', function(e) {
           e.preventDefault();
           currentPage++;
-          if (currentPage > 50) {
+          if (currentPage > 41) {
             currentPage = 1;
           }
           showPageContent(newWindow, currentPage);
@@ -860,7 +860,7 @@ newWindow.document.body.innerHTML = clickCountContent;
     </TD>
   </TR>
 </TABLE>
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -868,11 +868,17 @@ newWindow.document.body.innerHTML = clickCountContent;
     <title>Button to Listing Page</title>
     <style>
         .gallery {
-            width: 348px;
+            width: 100%;
             border: 1px solid #000;
-            margin-top: 20px;
+            margin: 10px;
             padding: 10px;
+            box-sizing: border-box;
             position: relative; /* Ensure position context for delete button */
+        }
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
         .slideshow-container {
             max-width: 100%;
@@ -979,11 +985,17 @@ newWindow.document.body.innerHTML = clickCountContent;
                             padding: 20px;
                         }
                         .gallery {
-                            width: 348px;
+                            width: 100%;
                             border: 1px solid #000;
-                            margin-top: 20px;
+                            margin: 10px;
                             padding: 10px;
+                            box-sizing: border-box;
                             position: relative; /* Ensure position context for delete button */
+                        }
+                        .gallery-container {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 10px;
                         }
                         .slideshow-container {
                             max-width: 100%;
@@ -1087,7 +1099,7 @@ newWindow.document.body.innerHTML = clickCountContent;
                         <button type="button" onclick="addPhotoUrlField()">Add another photo</button><br><br>
                         <button type="button" onclick="submitAd()">Post an Ad</button>
                     </form>
-                    <div id="galleriesContainer"></div>
+                    <div id="galleriesContainer" class="gallery-container"></div>
 
                     <script>
                         let photoUrlIndex = 1;
@@ -1276,6 +1288,12 @@ newWindow.document.body.innerHTML = clickCountContent;
     </script>
 </body>
 </html>
+
+
+
+
+                                   
+
                                                                                                              <!DOCTYPE html>
 <html>
 <head>
