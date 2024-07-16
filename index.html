@@ -1,3 +1,34 @@
+<title>eNull </title>
+</head>
+<body>
+  <script>
+    var popup = window.open('', 'popup', 'width=400,height=300,left=200,top=100,resizable=yes,scrollbars=yes');
+    popup.document.body.innerHTML = `
+      <h2>eNull</h2>
+      <ul>
+      <li>Pay $0.10 to Access These Features</li>
+        <li>Register</li>
+        <li>Create Listings</li>
+        <li>Create an Account</li>
+        
+      </ul>
+      <ul>
+        <li><input type="radio" name="payment" value="credit-card" onclick="window.location.href='https://www.visa.com/'"> <span>Credit Card</span></li>
+        <li><input type="radio" name="payment" value="paypal" onclick="window.location.href='https://www.paypal.com/'"> <span>PayPal</span></li>
+        <li><input type="radio" name="payment" value="debit-card" onclick="window.location.href='https://www.mastercard.com/'"> <span>Debit Card</span></li>
+        <li><input type="radio" name="payment" value="digital-wallet" onclick="window.location.href='https://www.apple.com/apple-pay/'"> <span>Digital Wallet (Apple Pay, Google Pay, etc.)</span></li>
+        <li><input type="radio" name="payment" value="bank-transfer" onclick="window.location.href='https://www.bankofamerica.com/'"> <span>Bank Transfer</span></li>
+        <li><input type="radio" name="payment" value="cryptocurrency" onclick="window.location.href='https://www.coinbase.com/'"> <span>Cryptocurrency (Bitcoin, etc.)</span></li>
+        <li><input type="radio" name="payment" value="gift-card" onclick="window.location.href='https://www.amazon.com/gift-cards/'"> <span>Gift Card</span></li>
+        <li><input type="radio" name="payment" value="mobile-payment" onclick="window.location.href='https://www.square.com/en-us/cash'"> <span>Mobile Payment (Square Cash, Venmo, etc.)</span></li>
+        <li><input type="radio" name="payment" value="prepaid-card" onclick="window.location.href='https://www.visa.com/pay-with-visa/prepaid-cards'"> <span>Prepaid Card</span></li>
+      </ul>
+      <button onclick="window.location.href='https://www.paypal.com/checkout/'">Pay</button>
+    `;
+  </script>
+</body>
+</html>
+
 <meta name="google-site-verification" content="CMapBQ1voymY8IV-g6bFe8tiumvSo3iqD6XMObZapgs" />
 <div id="content"></div>
 
