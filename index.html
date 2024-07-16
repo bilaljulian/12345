@@ -371,7 +371,7 @@ Condition:
     </TR>
   </TABLE>
 </BODY>
-  <button id="click-me-link">Click Me!</button>
+ <button id="click-me-link">Click Me!</button>
 
 <script>
 const clickMeLink = document.getElementById('click-me-link');
@@ -405,342 +405,91 @@ Thanks for clicking!
 setTimeout(() => {
 const clickCountContent = `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Counter</title>
-    <style>
-        .dropdown {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            display: none;
-            z-index: 999;
-        }
-    </style>
+<title>Click Count</title>
+<style>
+body {
+background-color: #000;
+color: #fff;
+}
+table {
+border-collapse: collapse;
+width: 100%;
+}
+th, td {
+border: 1px solid #fff;
+padding: 10px;
+}
+.graph {
+width: 1500px;
+height: 600px;
+border: 1px solid #fff;
+}
+.graph-stats {
+font-size: 24px;
+font-weight: bold;
+}
+.graph-stats-value {
+font-size: 48px;
+font-weight: bold;
+color: #ff9900;
+}
+.graph-line {
+stroke: #ff9900;
+stroke-width: 4;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+</style>
 </head>
 <body>
-    <button id="click-me-link">Click Me!</button>
-
-    <div id="deposit-success" class="dropdown">
-        <ul style="list-style-type: disc; margin: 0; padding-left: 20px;">
-            <li id="deposit-success-message">Deposit Successful!</li>
-        </ul>
-    </div>
-    <div id="deposit-failure" class="dropdown" style="background-color: #f44336;">
-        <span id="deposit-failure-message">Deposit Failed. Please check your card details.</span>
-    </div>
-
-    <script>
-        const clickMeLink = document.getElementById('click-me-link');
-        const depositSuccess = document.getElementById('deposit-success');
-        const depositFailure = document.getElementById('deposit-failure');
-        const depositSuccessMessage = document.getElementById('deposit-success-message');
-        const depositFailureMessage = document.getElementById('deposit-failure-message');
-
-        // Retrieve click count, earnings, and milestones from local storage, or initialize if not set
-        let clickCount = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
-        let earnings = parseFloat(localStorage.getItem('earnings')) || 0; // Initialize earnings from local storage
-        let deposit = clickCount * 0.05; // Initialize deposit based on the click count
-        let adDeposit = 0; // Initialize ad deposit amount
-        let graphData = [{ x: clickCount, y: earnings }]; // Initialize with one data point
-        let revenueMilestones = localStorage.getItem('revenueMilestones') ? JSON.parse(localStorage.getItem('revenueMilestones')) : [];
-        let cpm = 0;
-        let lastClickTime = new Date().getTime();
-        let clicksPerMinute = 0;
-
-        // Increment the click count by 1 if it's the first visit (clickCount is 0)
-        if (clickCount === 0) {
-            clickCount = 1;
-            earnings = 0;
-            localStorage.setItem('clickCount', clickCount);
-            localStorage.setItem('earnings', earnings.toFixed(2));
-        }
-
-        clickMeLink.addEventListener('click', incrementClickCount);
-
-        function incrementClickCount() {
-            const currentTime = new Date().getTime();
-            const timeDiff = currentTime - lastClickTime;
-            lastClickTime = currentTime;
-
-            clickCount++;
-            earnings += 0.10;
-            deposit += 0.05;
-            adDeposit += 0.10; // Increment ad deposit amount
-            graphData.push({ x: clickCount, y: earnings });
-
-            cpm = (clickCount / (timeDiff / 60000)).toFixed(2); // Calculate CPM (Clicks per minute)
-            clicksPerMinute = Math.round(60000 / timeDiff); // Calculate Clicks per minute
-
-            // Check for every thousand clicks and record revenue
-            if (clickCount % 1000 === 0) {
-                revenueMilestones.push({ clicks: clickCount, revenue: earnings.toFixed(2), deposit: deposit.toFixed(2), adDeposit: adDeposit.toFixed(2) });
-                localStorage.setItem('revenueMilestones', JSON.stringify(revenueMilestones));
-            }
-
-            localStorage.setItem('clickCount', clickCount);
-            localStorage.setItem('earnings', earnings.toFixed(2));
-
-            // Open a new window for thanking and displaying stats
-            const thanksWindow = window.open("", "_blank");
-            thanksWindow.document.body.innerHTML = `
-                <div style="font-size: 24px; font-weight: bold; color: #ff9900;">
-                    Thanks for clicking!
-                </div>
-            `;
-
-            // Delayed update of content after 2 seconds
-            setTimeout(() => {
-                // Construct the content for the stats and milestones
-                const revenueTableRows = revenueMilestones.map(milestone => `
-                    <tr>
-                        <td>${milestone.clicks}</td>
-                        <td>$${milestone.revenue}</td>
-                        <td>$${milestone.deposit}</td>
-                        <td>$${milestone.adDeposit}</td>
-                    </tr>
-                `).join('');
-
-                // Construct the HTML content for the stats page
-                const clickCountContent = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Click Count</title>
-                        <style>
-                            body {
-                                background-color: #000;
-                                color: #fff;
-                            }
-                            table {
-                                border-collapse: collapse;
-                                width: 100%;
-                                margin-bottom: 20px;
-                            }
-                            th, td {
-                                border: 1px solid #fff;
-                                padding: 10px;
-                            }
-                            .graph {
-                                width: 1500px;
-                                height: 600px;
-                                border: 1px solid #fff;
-                                margin-top: 20px;
-                                overflow: hidden;
-                                position: relative;
-                            }
-                            .graph-stats {
-                                font-size: 24px;
-                                font-weight: bold;
-                            }
-                            .graph-stats-value {
-                                font-size: 48px;
-                                font-weight: bold;
-                                color: #ff9900;
-                            }
-                            .graph-line {
-                                stroke: #ff9900;
-                                stroke-width: 4;
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                            }
-                            .form-container {
-                                margin-top: 20px;
-                            }
-                            .form-container label {
-                                display: block;
-                                margin-bottom: 10px;
-                                font-weight: bold;
-                            }
-                            .form-container input {
-                                width: 100%;
-                                padding: 8px;
-                                margin-bottom: 10px;
-                                box-sizing: border-box;
-                            }
-                            .dropdown {
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background-color: #4CAF50;
-                                color: white;
-                                padding: 15px;
-                                border-radius: 5px;
-                                display: none;
-                                z-index: 999;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <h1>Click Count</h1>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Click Count</th>
-                                    <th>Earnings</th>
-                                    <th>Deposit</th>
-                                    <th>Ad Deposit</th>
-                                    <th>CPM</th>
-                                    <th>Clicks Per Minute</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>${clickCount}</td>
-                                    <td>$${earnings.toFixed(2)}</td>
-                                    <td>$${deposit.toFixed(2)}</td>
-                                    <td>$${adDeposit.toFixed(2)}</td>
-                                    <td>${cpm}</td>
-                                    <td>${clicksPerMinute}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <h2>Revenue Milestones</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Clicks</th>
-                                    <th>Revenue</th>
-                                    <th>Deposit</th>
-                                    <th>Ad Deposit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${revenueTableRows}
-                            </tbody>
-                        </table>
-                        <div class="form-container">
-                            <label for="card-number">Card Number:</label>
-                            <input type="text" id="card-number" placeholder="Enter your debit card number">
-
-                            <label for="expiry">Expiry Date:</label>
-                            <input type="text" id="expiry" placeholder="MM/YYYY">
-
-                            <label for="cvv">CVV:</label>
-                            <input type="text" id="cvv" placeholder="CVV">
-
-                            <label for="ad-deposit">Ad Deposit Amount:</label>
-                            <input type="text" id="ad-deposit" placeholder="Enter ad deposit amount">
-
-                            <button id="submit-deposit">Submit Deposit</button>
-                        </div>
-                        <div class="graph">
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">Clicks:</div>
-                                <div class="graph-stats-value">${clickCount}</div>
-                            </div>
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">Earnings:</div>
-                                <div class="graph-stats-value">$${earnings.toFixed(2)}</div>
-                            </div>
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">Deposit:</div>
-                                <div class="graph-stats-value">$${deposit.toFixed(2)}</div>
-                            </div>
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">Ad Deposit:</div>
-                                <div class="graph-stats-value">$${adDeposit.toFixed(2)}</div>
-                            </div>
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">CPM:</div>
-                                <div class="graph-stats-value">${cpm}</div>
-                            </div>
-                            <div class="graph-stats">
-                                <div class="graph-stats-label">Clicks Per Minute:</div>
-                                <div class="graph-stats-value">${clicksPerMinute}</div>
-                            </div>
-                            <svg class="graph-line" viewBox="0 0 1500 600" width="1500">
-                                <polyline points="${graphData.map((point, index) => `${index * 30}, ${600 - point.y * 12}`).join(' ')}" />
-                            </svg>
-                        </div>
-                        <div id="deposit-submitted" class="dropdown">
-                            <span id="deposit-submitted-message">Deposit Submitted!</span>
-                        </div>
-                    </body>
-                    </html>
-                `;
-
-                // Write the content to the new window
-                thanksWindow.document.open();
-                thanksWindow.document.write(clickCountContent);
-                thanksWindow.document.close();
-
-                // Show dropdown message for deposit submission
-                const depositSubmitted = thanksWindow.document.getElementById('deposit-submitted');
-                depositSubmitted.style.display = 'block';
-
-                // Add event listener for the "Submit Deposit" button in the new window
-                const submitDepositButton = thanksWindow.document.getElementById('submit-deposit');
-                submitDepositButton.addEventListener('click', async () => {
-                    // Prompt user to enter deposit amount
-                    const depositAmount = prompt('How much do you want to deposit?');
-
-                    if (depositAmount === null || depositAmount.trim() === '') {
-                        alert('Deposit submitted ');
-                        return;
-                    }
-
-                    // Get card details entered by the user
-                    const cardNumber = thanksWindow.document.getElementById('card-number').value;
-                    const expiry = thanksWindow.document.getElementById('expiry').value;
-                    const cvv = thanksWindow.document.getElementById('cvv').value;
-                    const adDepositAmount = parseFloat(thanksWindow.document.getElementById('ad-deposit').value);
-
-                    // Validate card details (basic validation example)
-                    if (cardNumber.trim() === '' || expiry.trim() === '' || cvv.trim() === '') {
-                        alert('Please fill in all card details.');
-                        return;
-                    }
-
-                    // Simulate processing deposit (replace with actual API call to your payment processor)
-                    const paymentSuccess = await simulatePaymentProcessing(cardNumber, expiry, cvv, parseFloat(depositAmount));
-
-                    if (paymentSuccess) {
-                        // Show dropdown message for deposit success
-                        depositSuccessMessage.textContent = `Deposit Successful! Amount: $${parseFloat(depositAmount).toFixed(2)}, Ad Deposit: $${adDepositAmount.toFixed(2)}`;
-                        depositSuccess.style.display = 'block';
-
-                        // Reset earnings to 0 and update local storage
-                        earnings = 0;
-                        localStorage.setItem('clickCount', clickCount);
-                        localStorage.setItem('earnings', earnings.toFixed(2));
-                    } else {
-                        depositFailure.style.display = 'block';
-                    }
-
-                    // Update the stats page content after deposit
-                    updateStatsPage();
-                });
-
-                // Function to simulate payment processing (replace with actual backend integration)
-                function simulatePaymentProcessing(cardNumber, expiry, cvv, amount) {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            const randomSuccess = Math.random() < 0.9; // 90% success rate simulation
-
-                            resolve(randomSuccess);
-                        }, 2000); // Simulate 2 seconds delay
-                    });
-                }
-
-                // Function to update the stats page content after deposit
-                function updateStatsPage() {
-                    // Update stats and milestones if needed
-                    // Here you can update the stats or perform any other actions after deposit
-                }
-            }, 2000); // 2 seconds delay before updating content
-        }
-    </script>
+<h1>Click Count</h1>
+<table>
+<thead>
+<tr>
+<th>Click Count</th>
+<th>Earnings</th>
+<th>CPM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>${clickCount}</td>
+<td>$${earnings.toFixed(2)}</td>
+<td>${cpm}</td>
+</tr>
+</tbody>
+</table>
+<div class="graph">
+<div class="graph-stats">
+<div class="graph-stats-label">Clicks:</div>
+<div class="graph-stats-value">${clickCount}</div>
+</div>
+<div class="graph-stats">
+<div class="graph-stats-label">Earnings:</div>
+<div class="graph-stats-value">$${earnings.toFixed(2)}</div>
+</div>
+<div class="graph-stats">
+<div class="graph-stats-label">CPM:</div>
+<div class="graph-stats-value">${cpm}</div>
+</div>
+<svg class="graph-line" viewBox="0 0 1500 600" width="1500">
+<polyline points="${graphData.map((point, index) => `${index * 30}, ${600 - point.y * 12}`)}" />
+</svg>
+</div>
 </body>
 </html>
+`;
 
+const newWindow = window.open("", "_blank");
+newWindow.document.body.innerHTML = clickCountContent;
+}, 2000); // Wait 2 seconds before opening the new tab
+}
+}
+</script>
 
 <div class="texting-program">
   <h2>Texting Program</h2>
@@ -856,42 +605,7 @@ const clickCountContent = `
   <h1></h1>
   
   
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advertising Button</title>
-</head>
-<body>
-  <button onclick="openAdvertisingPage()">Advertising</button>
 
-  <script>
-    function openAdvertisingPage() {
-      // Open a new tab with about:blank
-      var blankTab = window.open('about:blank', '_blank');
-
-      // Check if the new tab opened successfully
-      if (blankTab) {
-        // Manipulate the new tab's document
-        var newTabDocument = blankTab.document;
-
-        // Example: Add advertising content
-        newTabDocument.write('<h1>Welcome to Advertising Page</h1>');
-        newTabDocument.write('<div id="adContainer"></div>');
-        
-        // Example: Add a form to post advertisements
-        newTabDocument.write('<form id="adForm">');
-        newTabDocument.write('<label for="adContent">Advertisement:</label><br>');
-        newTabDocument.write('<textarea id="adContent" name="adContent" rows="4" cols="50"></textarea><br>');
-        newTabDocument.write('<button type="button" onclick="document.getElementById(\'adContainer\').innerHTML = \'Advertisement posted:<br>\' + document.getElementById(\'adContent\').value;">Post Advertisement</button>');
-        newTabDocument.write('</form>');
-      }
-    }
-  </script>
-</body>
-</html>	      
-</html> </A>
 	      
             <H3>Item 1234</H3>
             <P>Starting Price: $10.00</P>
@@ -916,360 +630,7 @@ const clickCountContent = `
     </TD>
   </TR>
 </TABLE>
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <style>
-        .listing-box {
-            width: 348px;
-            height: 355px;
-            border: 1px solid #ccc;
-            margin: 10px;
-            float: left;
-            opacity: 0.5; /* Faded out initially */
-        }
-        .listing-box:hover {
-            opacity: 1; /* Full opacity on hover */
-        }
-        .clearfix {
-            clear: both;
-        }
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: 200px; /* Adjust as needed */
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        .mySlides {
-            display: none;
-            position: relative;
-        }
-        .mySlides img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            margin-top: -22px;
-            padding: 16px;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            transition: 0.6s ease;
-            border-radius: 0 3px 3px 0;
-        }
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-        .prev {
-            left: 0;
-            border-radius: 3px 0 0 3px;
-        }
-        .prev:hover, .next:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        .add-picture-form {
-            margin-top: 10px;
-            text-align: center; /* Centering the form */
-        }
-        .add-picture-form input[type="text"] {
-            width: 70%;
-            padding: 8px;
-            margin-right: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .add-picture-form button {
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .add-picture-form button:hover {
-            background-color: #0056b3;
-        }
-        .listing-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            gap: 20px; /* Adjust gap between items */
-            margin-top: 20px; /* Adjust top margin */
-        }
-        .listing-item {
-            width: 348px;
-            height: 355px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            box-sizing: border-box;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .listing-item img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .payment-form {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            width: 80%;
-            margin: 0 auto;
-        }
-        #payment-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #payment-form label {
-            margin-bottom: 5px;
-        }
-        #payment-form input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        #payment-form button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #payment-form button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h2></h2>
 
-    <!-- Button for Listing Page -->
-    <button id="listing-page-button">Featured Listings</button>
-
-    <div class="clearfix"></div>
-
-    <script>
-        const listingPageButton = document.getElementById('listing-page-button');
-        let nextItemId = 1;
-
-        listingPageButton.addEventListener('click', showListingPage);
-
-        function showListingPage(event) {
-            event.preventDefault();
-
-            // Remove existing content
-            document.body.innerHTML = '';
-
-            const listingPageContent = `
-                <div class="listing-page">
-                    <h1>Featured Listings</h1>
-                    <div class="listing-container" id="listing-container">
-                        <!-- Listing items will be added here -->
-                    </div>
-                    <div class="payment-form">
-                        <h2>Payment Information</h2>
-                        <form id="payment-form">
-                            <label for="card-number">Card Number:</label>
-                            <input type="text" id="card-number" name="card-number" required pattern="[0-9]{13,16}">
-                            <br><br>
-                            <label for="expiry-date">Expiry Date:</label>
-                            <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" required pattern="[0-9]{2}/[0-9]{2}">
-                            <br><br>
-                            <label for="cvv">CVV:</label>
-                            <input type="text" id="cvv" name="cvv" required pattern="[0-9]{3}">
-                            <br><br>
-                            <button type="submit">Pay Now</button>
-                        </form>
-                    </div>
-                    <button id="add-listing-button" disabled>Add Featured Listing</button>
-                </div>
-                <style>
-                    .listing-page {
-                        font-family: Arial, sans-serif;
-                        text-align: center;
-                        margin: 20px;
-                    }
-                    .listing-container {
-                        display: flex;
-                        flex-wrap: wrap;
-                        justify-content: center;
-                        gap: 20px; /* Adjust gap between items */
-                    }
-                    .listing-item {
-                        width: 348px;
-                        height: 355px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                        padding: 10px;
-                        box-sizing: border-box;
-                        text-align: center;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-                    }
-                    .listing-item img {
-                        max-width: 100%;
-                        max-height: 200px;
-                        border-radius: 5px;
-                        margin-bottom: 10px;
-                    }
-                    .payment-form {
-                        margin-top: 20px;
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                        background-color: #f9f9f9;
-                        width: 80%;
-                        margin: 0 auto;
-                    }
-                    #payment-form {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                    }
-                    #payment-form label {
-                        margin-bottom: 5px;
-                    }
-                    #payment-form input {
-                        width: 100%;
-                        padding: 8px;
-                        margin-bottom: 10px;
-                        border: 1px solid #ccc;
-                        border-radius: 5px;
-                        box-sizing: border-box;
-                    }
-                    #payment-form button {
-                        padding: 10px 20px;
-                        background-color: #007bff;
-                        color: #fff;
-                        border: none;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-size: 16px;
-                    }
-                    #payment-form button:hover {
-                        background-color: #0056b3;
-                    }
-                </style>
-            `;
-
-            const newWindow = window.open("", "_blank");
-            newWindow.document.body.innerHTML = listingPageContent;
-
-            const addListingButton = newWindow.document.getElementById('add-listing-button');
-            addListingButton.addEventListener('click', addListingItem);
-
-            function addListingItem() {
-                const listingContainer = newWindow.document.getElementById('listing-container');
-                const newItemId = `item-${nextItemId}`;
-                const newListingItem = `
-                    <div class="listing-item" id="${newItemId}">
-                        <div class="add-picture-form">
-                            <input type="text" id="img-url-${nextItemId}" placeholder="Enter Image URL">
-                            <button onclick="addSlide(${nextItemId})">Add Picture</button>
-                        </div>
-                        <div class="slideshow-container" id="slideshow-${nextItemId}">
-                            <div class="mySlides fade">
-                                <img src="https://via.placeholder.com/350x200" style="width:100%">
-                            </div>
-                            <a class="prev" onclick="plusSlides(-1, ${nextItemId})">&#10094;</a>
-                            <a class="next" onclick="plusSlides(1, ${nextItemId})">&#10095;</a>
-                        </div>
-                        <h2>Title of Item ${nextItemId}</h2>
-                        <p>Description of Item ${nextItemId}</p>
-                        <button class="delete-button">Delete</button>
-                    </div>
-                `;
-                listingContainer.insertAdjacentHTML('beforeend', newListingItem);
-
-                const deleteButtons = newWindow.document.querySelectorAll(`#${newItemId} .delete-button`);
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        newWindow.document.getElementById(newItemId).remove();
-                    });
-                });
-
-                nextItemId++;
-            }
-
-            newWindow.plusSlides = function(n, itemId) {
-                showSlides(newWindow.slideIndex[itemId] += n, itemId);
-            }
-
-            newWindow.showSlides = function(n, itemId) {
-                let i;
-                const slides = newWindow.document.querySelectorAll(`#slideshow-${itemId} .mySlides`);
-                if (n > slides.length) { newWindow.slideIndex[itemId] = 1 }
-                if (n < 1) { newWindow.slideIndex[itemId] = slides.length }
-                for (i = 0; i < slides.length; i++) {
-                    slides[i].style.display = "none";
-                }
-                slides[newWindow.slideIndex[itemId]-1].style.display = "block";
-            }
-
-            newWindow.addSlide = function(itemId) {
-                const imgUrl = newWindow.document.getElementById(`img-url-${itemId}`).value;
-                if (imgUrl) {
-                    const slideshow = newWindow.document.getElementById(`slideshow-${itemId}`);
-                    const newSlide = `
-                        <div class="mySlides fade">
-                            <img src="${imgUrl}" style="width:100%">
-                        </div>
-                    `;
-                    slideshow.insertAdjacentHTML('beforeend', newSlide);
-                    newWindow.slideIndex[itemId] = newWindow.document.querySelectorAll(`#slideshow-${itemId} .mySlides`).length;
-                    newWindow.showSlides(newWindow.slideIndex[itemId], itemId);
-                    newWindow.document.getElementById(`img-url-${itemId}`).value = '';
-                }
-            }
-
-            const paymentForm = newWindow.document.getElementById('payment-form');
-            paymentForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const cardNumber = newWindow.document.getElementById('card-number').value;
-                const expiryDate = newWindow.document.getElementById('expiry-date').value;
-                const cvv = newWindow.document.getElementById('cvv').value;
-
-                // Simulate payment processing (replace with actual logic)
-                console.log(`Processing payment with Card Number: ${cardNumber}, Expiry Date: ${expiryDate}, CVV: ${cvv}`);
-                alert('Payment processed successfully!');
-                addListingButton.disabled = false; // Enable "Add Listing" button after successful payment
-                paymentForm.reset();
-            });
-        }
-    </script>
-    <script>
-        window.slideIndex = {};
-    </script>
-</body>
-</html>
 
 <TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
   <TR>
