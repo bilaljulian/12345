@@ -371,7 +371,7 @@ Condition:
     </TR>
   </TABLE>
 </BODY>
- <button id="click-me-link">Click Me!</button>
+<button id="click-me-link">Click Me!</button>
 
 <script>
 const clickMeLink = document.getElementById('click-me-link');
@@ -384,112 +384,112 @@ let lastClickTime = 0;
 clickMeLink.addEventListener('click', incrementClickCount);
 
 function incrementClickCount() {
-const currentTime = new Date().getTime();
-const timeDiff = currentTime - lastClickTime;
-lastClickTime = currentTime;
+    const currentTime = new Date().getTime();
+    const timeDiff = currentTime - lastClickTime;
+    lastClickTime = currentTime;
 
-clickCount++;
-earnings += 0.10;
-graphData.push({ x: clickCount, y: earnings });
+    clickCount++;
+    earnings += 0.10;
+    graphData.push({ x: clickCount, y: earnings });
 
-cpm = (clickCount / (timeDiff / 60000)).toFixed(2);
+    cpm = (clickCount / (timeDiff / 60000)).toFixed(2);
 
-if (clickCount === 2) {
-const thanksWindow = window.open("", "_blank");
-thanksWindow.document.body.innerHTML = `
-<div style="font-size: 24px; font-weight: bold; color: #ff9900;">
-Thanks for clicking!
-</div>
-`;
+    if (clickCount === 2) {
+        const thanksWindow = window.open("", "_blank");
+        thanksWindow.document.body.innerHTML = `
+        <div style="font-size: 24px; font-weight: bold; color: #ff9900;">
+            Thanks for clicking!
+        </div>
+        `;
 
-setTimeout(() => {
-const clickCountContent = `
-<!DOCTYPE html>
-<html>
-<head>
-<title>Click Count</title>
-<style>
-body {
-background-color: #000;
-color: #fff;
-}
-table {
-border-collapse: collapse;
-width: 100%;
-}
-th, td {
-border: 1px solid #fff;
-padding: 10px;
-}
-.graph {
-width: 1500px;
-height: 600px;
-border: 1px solid #fff;
-}
-.graph-stats {
-font-size: 24px;
-font-weight: bold;
-}
-.graph-stats-value {
-font-size: 48px;
-font-weight: bold;
-color: #ff9900;
-}
-.graph-line {
-stroke: #ff9900;
-stroke-width: 4;
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-}
-</style>
-</head>
-<body>
-<h1>Click Count</h1>
-<table>
-<thead>
-<tr>
-<th>Click Count</th>
-<th>Earnings</th>
-<th>CPM</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>${clickCount}</td>
-<td>$${earnings.toFixed(2)}</td>
-<td>${cpm}</td>
-</tr>
-</tbody>
-</table>
-<div class="graph">
-<div class="graph-stats">
-<div class="graph-stats-label">Clicks:</div>
-<div class="graph-stats-value">${clickCount}</div>
-</div>
-<div class="graph-stats">
-<div class="graph-stats-label">Earnings:</div>
-<div class="graph-stats-value">$${earnings.toFixed(2)}</div>
-</div>
-<div class="graph-stats">
-<div class="graph-stats-label">CPM:</div>
-<div class="graph-stats-value">${cpm}</div>
-</div>
-<svg class="graph-line" viewBox="0 0 1500 600" width="1500">
-<polyline points="${graphData.map((point, index) => `${index * 30}, ${600 - point.y * 12}`)}" />
-</svg>
-</div>
-</body>
-</html>
-`;
+        setTimeout(() => {
+            const clickCountContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Click Count</title>
+            <style>
+                body {
+                    background-color: #000;
+                    color: #fff;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                th, td {
+                    border: 1px solid #fff;
+                    padding: 10px;
+                }
+                .graph {
+                    width: 1500px;
+                    height: 600px;
+                    border: 1px solid #fff;
+                }
+                .graph-stats {
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+                .graph-stats-value {
+                    font-size: 48px;
+                    font-weight: bold;
+                    color: #ff9900;
+                }
+                .graph-line {
+                    stroke: #ff9900;
+                    stroke-width: 4;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            </style>
+            </head>
+            <body>
+            <h1>Click Count</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Click Count</th>
+                        <th>Earnings</th>
+                        <th>CPM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${clickCount}</td>
+                        <td>$${earnings.toFixed(2)}</td>
+                        <td>${cpm}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="graph">
+                <div class="graph-stats">
+                    <div class="graph-stats-label">Clicks:</div>
+                    <div class="graph-stats-value">${clickCount}</div>
+                </div>
+                <div class="graph-stats">
+                    <div class="graph-stats-label">Earnings:</div>
+                    <div class="graph-stats-value">$${earnings.toFixed(2)}</div>
+                </div>
+                <div class="graph-stats">
+                    <div class="graph-stats-label">CPM:</div>
+                    <div class="graph-stats-value">${cpm}</div>
+                </div>
+                <svg class="graph-line" viewBox="0 0 1500 600" width="1500">
+                    <polyline points="${graphData.map((point, index) => `${index * 30}, ${600 - point.y * 12}`).join(' ')}" />
+                </svg>
+            </div>
+            </body>
+            </html>
+            `;
 
-const newWindow = window.open("", "_blank");
-newWindow.document.body.innerHTML = clickCountContent;
-}, 2000); // Wait 2 seconds before opening the new tab
-}
+            thanksWindow.document.body.innerHTML = clickCountContent;
+        }, 2000); // Wait 2 seconds before updating the tab content
+    }
 }
 </script>
+
 
 <div class="texting-program">
   <h2>Texting Program</h2>
