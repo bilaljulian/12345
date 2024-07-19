@@ -1,0 +1,103 @@
+# migration_lock.toml
+
+[database]
+# The database URL for your application
+url = "postgresql://username:password@localhost:5432/enull"
+
+# Database schema settings
+schema = "public"
+
+# Migrations directory
+migrations_directory = "migrations"
+
+# Whether to use transactions for migrations
+use_transactions = true
+
+[logger]
+# Log level for migrations (options: debug, info, warn, error)
+level = "info"
+
+[lock]
+# Timeout in seconds for acquiring the lock
+timeout = 60
+
+# The maximum number of retries to acquire the lock
+max_retries = 5
+
+[default]
+# Default configuration for new migrations
+version = "1.0.0"
+description = "Initial setup"
+
+[migrations]
+# Configuration for individual migrations
+[[migrations.migration]]
+version = "1.0.0"
+description = "Initial schema setup"
+filename = "2024-07-18_initial_schema.sql"
+
+[[migrations.migration]]
+version = "1.1.0"
+description = "Add rare items table"
+filename = "2024-07-19_add_rare_items_table.sql"
+
+[[migrations.migration]]
+version = "1.2.0"
+description = "Add user authentication"
+filename = "2024-07-20_add_user_authentication.sql"
+
+[[migrations.migration]]
+version = "1.3.0"
+description = "Add payment processing"
+filename = "2024-07-21_add_payment_processing.sql"
+
+[features]
+# List of features to enable for migrations
+# These could include options like schema changes, new indexes, etc.
+enabled = ["schema_changes", "indexing"]
+
+[environments]
+# Environment-specific settings
+[environments.development]
+url = "postgresql://dev_user:dev_password@localhost:5432/enull_dev"
+
+[environments.staging]
+url = "postgresql://staging_user:staging_password@staging_host:5432/enull_staging"
+
+[environments.production]
+url = "postgresql://prod_user:prod_password@prod_host:5432/enull_prod"
+
+[security]
+# Security settings for migrations
+# Ensure migration files are secured and validated
+file_permissions = "0600"
+validate_checksum = true
+
+[notifications]
+# Configuration for notifications about migration status
+# Can include email, Slack, or other notification systems
+email_notifications = ["admin@enull.com"]
+slack_notifications = ["#migration-alerts"]
+
+[version_control]
+# Configuration for version control integration
+enabled = true
+repository = "git@github.com:enull/enull-repo.git"
+branch = "main"
+
+[backup]
+# Configuration for database backups before migration
+enabled = true
+backup_path = "/backups/enull"
+retention_policy = "30d"
+
+[rollback]
+# Configuration for rollbacks
+enabled = true
+rollback_strategy = "last_successful"
+
+[maintenance]
+# Configuration for maintenance window during migrations
+start_time = "02:00"
+end_time = "03:00"
+timezone = "UTC"
