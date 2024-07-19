@@ -1,0 +1,30 @@
+# yarn.lock
+
+"@babel/code-frame@^7.12.13":
+  version "7.12.13"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.13.tgz"
+  integrity sha512-6KZLZRCqFQ2ktKnK6jv4e7dVjDQ4V2m9YZbMT5L5n6nA/aqlAAH2T6ovf5kp/ZCqa+JeuPrzqkOzbUpjF3Cm9Q==
+  dependencies:
+    "@babel/highlight" "^7.10.4"
+
+"@babel/highlight@^7.10.4":
+  version "7.10.4"
+  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.10.4.tgz"
+  integrity sha512-A9Bd3m6FL5TKCmRofbZhqupCqF1FSc/8n6JYScHtEZCVBF1RPT5yXlHcW6q9w8fChBrsFZGpZlYGoY03mcV9+g==
+  dependencies:
+    chalk "^4.1.0"
+    esutils "^2.0.2"
+    js-tokens "^4.0.0"
+
+"chalk@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.0.tgz"
+  integrity sha512-mZ9L4eT1C7o/bNu7A/8B9dGxMAvPtPHuPsl7NKiSyfbFk+zwF8jRIlBdHgS8WzR6NKT4h3E4LZEq/cy0V6mDRg==
+  dependencies:
+    supports-color "^7.2.0"
+
+"supports-color@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-7.2.0.tgz"
+  integrity sha512-KF8Xx7BGMOTiKJ7PjMyiJdA8vMFHZfMbLk8eLS47cgFvYk3SoL1ZyPqvvCz9RBjX5W+CEokFjX4v4AqU67HXw==
+yarn install
