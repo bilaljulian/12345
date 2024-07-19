@@ -1,0 +1,57 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql" // or "mysql", "sqlite", etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  name          String?
+  phone         String?   @unique
+  passwordHash  String
+  zip           String?
+  city          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  items         Item[]
+  transactions  Transaction[]
+}
+
+model Item {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  pictureUrl    String
+  price         Float
+  categoryId    Int
+  userId        Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  category      Category  @relation(fields: [categoryId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  description   String?
+  items         Item[]
+}
+
+model Transaction {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  itemId        Int
+  amount        Float
+  transactionDate DateTime @default(now())
+  
+  user          User      @relation(fields: [userId], references: [id])
+  item          Item      @relation(fields: [itemId], references: [id])
+}
