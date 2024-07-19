@@ -1,0 +1,182 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Database connection
+mongoose.connect('mongodb://localhost/enull', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Models
+const Item = mongoose.model('Item', new mongoose.Schema({
+  title: String,
+  description: String,
+  pictureUrl: String,
+  price: Number,
+  category: String,
+}));
+
+// Routes
+app.post('/add-item', async (req, res) => {
+  const item = new Item(req.body);
+  await item.save();
+  res.status(201).send(item);
+});
+
+app.get('/items', async (req, res) => {
+  const items = await Item.find();
+  res.status(200).send(items);
+});
+
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+# Migration lock file for eNull
+
+[migrations]
+  [migrations.database]
+  name = "eNullDatabase"
+  type = "mongodb"
+  connectionString = "mongodb://localhost/enull"
+
+[lock]
+  lockFilePath = "./migrations/lockfile.lock"
+
+[[migration]]
+  id = "2024-07-18-init"
+  description = "Initial migration"
+  migrationPath = "./migrations/2024-07-18-init.js"
+
+[[migration]]
+  id = "2024-07-19-add-indexes"
+  description = "Add indexes to Item model"
+  migrationPath = "./migrations/2024-07-19-add-indexes.js"
+const mongoose = require('mongoose');
+
+module.exports = async function() {
+  const db = mongoose.connection;
+  await db.createCollection('items');
+  console.log('Collection "items" created.');
+};
+const mongoose = require('mongoose');
+
+module.exports = async function() {
+  const Item = mongoose.model('Item');
+  await Item.createIndex({ title: 1 });
+  console.log('Index on "title" field created.');
+};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNull - Rare Items</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="scripts.js"></script>
+</head>
+<body>
+    <header>
+        <h1>eNull - Rare Items</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#items">Items</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="items">
+            <h2>Available Rare Items</h2>
+            <div id="item-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 eNull. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/items')
+        .then(response => response.json())
+        .then(items => {
+            const container = document.getElementById('item-container');
+            container.innerHTML = items.map(item => `
+                <div class="item">
+                    <h3>${item.title}</h3>
+                    <p>${item.description}</p>
+                    <img src="${item.pictureUrl}" alt="${item.title}">
+                    <p>Price: $${item.price}</p>
+                </div>
+            `).join('');
+        })
+        .catch(err => console.error('Error fetching items:', err));
+});
+# Use the official Node.js image
+FROM node:16
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose port 3000
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "index.js"]
