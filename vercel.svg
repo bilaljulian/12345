@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNull - Rare Items for Sale</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>eNull</h1>
+            <img src="vercel.svg" alt="Vercel Logo" class="vercel-logo">
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#listings">Listings</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#login">Login</a></li>
+                    <li><a href="#signup">Sign Up</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section id="home">
+            <h2>Welcome to eNull</h2>
+            <p>Your destination for rare and unique items.</p>
+        </section>
+
+        <section id="listings">
+            <h2>Featured Listings</h2>
+            <div class="listing-container" id="listing-container">
+                <!-- Listings will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form id="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+
+        <section id="login">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" name="email" required>
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" name="password" required>
+                <button type="submit">Login</button>
+            </form>
+        </section>
+
+        <section id="signup">
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <label for="signup-email">Email:</label>
+                <input type="email" id="signup-email" name="email" required>
+                <label for="signup-name">Name:</label>
+                <input type="text" id="signup-name" name="name" required>
+                <label for="signup-password">Password:</label>
+                <input type="password" id="signup-password" name="password" required>
+                <label for="signup-phone">Phone:</label>
+                <input type="tel" id="signup-phone" name="phone">
+                <label for="signup-zip">Zip Code:</label>
+                <input type="text" id="signup-zip" name="zip">
+                <label for="signup-city">City:</label>
+                <input type="text" id="signup-city" name="city">
+                <button type="submit">Sign Up</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 eNull. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: #333;
+    color: white;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    width: 100%;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.header-container h1 {
+    margin: 0;
+}
+
+.vercel-logo {
+    width: 100px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+.listing-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.listing-container .listing {
+    width: 100%;
+    max-width: 300px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin: 5px 0 2px;
+}
+
+form input, form textarea {
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form button {
+    padding: 10px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #0056b3;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const listings = [
+        {
+            title: 'Rare Antique Vase',
+            description: 'An exquisite vase from the 18th century.',
+            pictureUrl: 'https://example.com/vase.jpg',
+            price: '$1,200'
+        },
+        {
+            title: 'Vintage Rolex Watch',
+            description: 'A vintage Rolex in mint condition.',
+            pictureUrl: 'https://example.com/watch.jpg',
+            price: '$5,000'
+        },
+        // Add more listings as needed
+    ];
+
+    const listingContainer = document.getElementById('listing-container');
+    listings.forEach(listing => {
+        const listingElement = document.createElement('div');
+        listingElement.classList.add('listing');
+        listingElement.innerHTML = `
+            <h3>${listing.title}</h3>
+            <img src="${listing.pictureUrl}" alt="${listing.title}" style="width:100%">
+            <p>${listing.description}</p>
+            <p><strong>${listing.price}</strong></p>
+        `;
+        listingContainer.appendChild(listingElement);
+    });
+
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Message sent!');
+    });
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Logged in!');
+    });
+
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Signed up!');
+    });
+});
