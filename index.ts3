@@ -1,0 +1,272 @@
+// index.ts
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import { Provider } from 'react-redux';
+import { createStore, combineReducers } from 'redux';
+import userReducer from './reducers/userReducer';
+import itemReducer from './reducers/itemReducer';
+import './index.css';
+
+// Combine reducers
+const rootReducer = combineReducers({
+  user: userReducer,
+  items: itemReducer,
+});
+
+// Create Redux store
+const store = createStore(rootReducer);
+
+// Render the App component
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+// reducers/userReducer.ts
+interface UserState {
+  isAuthenticated: boolean;
+  userInfo: {
+    email: string;
+    name: string;
+    phone: string;
+    zip: string;
+    city: string;
+  } | null;
+}
+
+const initialState: UserState = {
+  isAuthenticated: false,
+  userInfo: null,
+};
+
+const userReducer = (state = initialState, action: any): UserState => {
+  switch (action.type) {
+    case 'LOGIN_SUCCESS':
+      return {
+        ...state,
+        isAuthenticated: true,
+        userInfo: action.payload,
+      };
+    case 'LOGOUT':
+      return {
+        ...state,
+        isAuthenticated: false,
+        userInfo: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export default userReducer;
+// reducers/itemReducer.ts
+interface Item {
+  id: number;
+  title: string;
+  description: string;
+  pictureUrl: string;
+  price: number;
+  category: string;
+}
+
+interface ItemState {
+  items: Item[];
+  selectedItem: Item | null;
+}
+
+const initialState: ItemState = {
+  items: [],
+  selectedItem: null,
+};
+
+const itemReducer = (state = initialState, action: any): ItemState => {
+  switch (action.type) {
+    case 'FETCH_ITEMS_SUCCESS':
+      return {
+        ...state,
+        items: action.payload,
+      };
+    case 'SELECT_ITEM':
+      return {
+        ...state,
+        selectedItem: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+export default itemReducer;
+// actions/userActions.ts
+export const loginSuccess = (userInfo: any) => ({
+  type: 'LOGIN_SUCCESS',
+  payload: userInfo,
+});
+
+export const logout = () => ({
+  type: 'LOGOUT',
+});
+// actions/itemActions.ts
+export const fetchItemsSuccess = (items: any[]) => ({
+  type: 'FETCH_ITEMS_SUCCESS',
+  payload: items,
+});
+
+export const selectItem = (item: any) => ({
+  type: 'SELECT_ITEM',
+  payload: item,
+});
+// components/App.tsx
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers';
+import Header from './Header';
+import ItemList from './ItemList';
+import UserProfile from './UserProfile';
+
+const App: React.FC = () => {
+  const { isAuthenticated, userInfo } = useSelector((state: RootState) => state.user);
+
+  return (
+    <div className="App">
+      <Header />
+      {isAuthenticated && userInfo ? <UserProfile userInfo={userInfo} /> : null}
+      <ItemList />
+    </div>
+  );
+};
+
+export default App;
+// components/Header.tsx
+import React from 'react';
+
+const Header: React.FC = () => {
+  return (
+    <header>
+      <h1>eNull - Rare Items</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;
+// components/ItemList.tsx
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchItemsSuccess } from '../actions/itemActions';
+import { RootState } from '../reducers';
+
+const ItemList: React.FC = () => {
+  const dispatch = useDispatch();
+  const items = useSelector((state: RootState) => state.items.items);
+
+  useEffect(() => {
+    // Simulating an API call
+    const fetchItems = async () => {
+      const response = await fetch('/api/items');
+      const data = await response.json();
+      dispatch(fetchItemsSuccess(data));
+    };
+
+    fetchItems();
+  }, [dispatch]);
+
+  return (
+    <div className="item-list">
+      {items.map(item => (
+        <div key={item.id} className="item">
+          <h2>{item.title}</h2>
+          <img src={item.pictureUrl} alt={item.title} />
+          <p>{item.description}</p>
+          <p>${item.price}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default ItemList;
+// components/UserProfile.tsx
+import React from 'react';
+
+interface UserProfileProps {
+  userInfo: {
+    email: string;
+    name: string;
+    phone: string;
+    zip: string;
+    city: string;
+  };
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ userInfo }) => {
+  return (
+    <div className="user-profile">
+      <h2>Welcome, {userInfo.name}</h2>
+      <p>Email: {userInfo.email}</p>
+      <p>Phone: {userInfo.phone}</p>
+      <p>Address: {userInfo.city}, {userInfo.zip}</p>
+    </div>
+  );
+};
+
+export default UserProfile;
+/* index.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.item-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.item img {
+  max-width: 100%;
+  height: auto;
+}
+
+.user-profile {
+  padding: 20px;
+}
