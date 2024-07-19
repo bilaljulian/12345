@@ -1,0 +1,46 @@
+{
+  "extends": [
+    "config:base",
+    "schedule:weekly"
+  ],
+  "timezone": "America/New_York",
+  "automerge": true,
+  "automergeType": "branch",
+  "automergeStrategy": "rebase",
+  "updateNotScheduled": true,
+  "packageRules": [
+    {
+      "packagePatterns": ["*"],
+      "groupName": "all dependencies",
+      "schedule": ["daily"]
+    },
+    {
+      "packagePatterns": ["^react", "^react-dom"],
+      "groupName": "React libraries",
+      "schedule": ["daily"]
+    },
+    {
+      "packagePatterns": ["^webpack", "^babel"],
+      "groupName": "Build tools",
+      "schedule": ["weekly"]
+    },
+    {
+      "packagePatterns": ["^eslint", "^prettier"],
+      "groupName": "Linting and formatting",
+      "schedule": ["monthly"]
+    }
+  ],
+  "dependencyDashboard": true,
+  "ignoreDeps": [
+    "express",
+    "mongoose"
+  ],
+  "branchPrefix": "renovate-",
+  "gitHub": {
+    "assignees": ["@your-username"],
+    "labels": ["dependencies"],
+    "reviewers": ["@team-reviewer"]
+  },
+  "prHourlyLimit": 5,
+  "prConcurrentLimit": 10
+}
