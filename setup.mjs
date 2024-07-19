@@ -1,145 +1,208 @@
-// setup.mjs
+import { BookType, PrismaClient } from '@prisma/client';
 
-import express from 'express';
-import mongoose from 'mongoose';
-import session from 'express-session';
-import passport from 'passport';
-import LocalStrategy from 'passport-local';
-import bcrypt from 'bcrypt';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { MongoClient } from 'mongodb';
-import stripe from 'stripe';
+import dotenv from 'dotenv';
+import { faker } from '@faker-js/faker';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 3000;
+const { TIDB_USER, TIDB_PASSWORD, TIDB_HOST, TIDB_PORT, TIDB_DB_NAME = 'bookshop', DATABASE_URL } = process.env;
+// Notice: When using TiDb Cloud Serverless Tier, you **MUST** set the following flags to enable tls connection.
+const SSL_FLAGS = 'pool_timeout=60&sslaccept=accept_invalid_certs';
+// TODO: When TiDB Cloud support return DATABASE_URL, we can remove it.
+const databaseURL = DATABASE_URL
+    ? `${DATABASE_URL}?${SSL_FLAGS}`
+    : `mysql://${TIDB_USER}:${TIDB_PASSWORD}@${TIDB_HOST}:${TIDB_PORT}/${TIDB_DB_NAME}?${SSL_FLAGS}`;
 
-// MongoDB setup
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/enull';
-mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const setup = async () => {
+  let client;
 
-// Stripe setup
-const stripeSecret = process.env.STRIPE_SECRET || 'your_stripe_secret_key';
-const stripeClient = stripe(stripeSecret);
+  try {
+    client = new PrismaClient({
+      datasources: {
+        db: {
+          url: databaseURL
+        }
+      }
+    });
+    await client.$connect();
 
-// Middleware setup
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/public'));
+    const hasData = await client.user.count() > 0;
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_session_secret',
-  resave: false,
-  saveUninitialized: false,
-}));
+    if (hasData) {
+      console.log('Database already exists with data');
+      client.$disconnect();
+      return;
+    }
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Passport configuration
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const user = await User.findOne({ username });
-      if (!user) return done(null, false);
-      
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) return done(null, user);
-      
-      return done(null, false);
-    } catch (err) {
-      return done(err);
+    // Seed data.
+    const users = await seedUsers(client, 20);
+    const authors = await seedAuthors(client, 20);
+    const books = await seedBooks(client, 100);
+    await seedBooksAndAuthors(client, books, authors);
+    await seedRatings(client, books, users);
+  } catch (error) {
+    throw error;
+  } finally {
+    if (client) {
+      await client.$disconnect();
     }
   }
-));
+};
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
+// Seed users data.
+async function seedUsers(client, num) {
+  const records = [...Array(num)].map((value, index) => {
+    const id = index + 1;
+    const nickname = faker.internet.userName();
+    const balance = faker.random.numeric(6);
+
+    return {
+      id,
+      nickname,
+      balance
+    };
+  });
+
+  const added = await client.user.createMany({
+      data: records,
+      skipDuplicates: true
+  });
+
+  if (added.count > 0) {
+    console.log(`Successfully inserted ${added.count} user records.`);
   }
-});
 
-// Models
-const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String,
-});
+  return records;
+}
 
-const User = mongoose.model('User', UserSchema);
+// Seed authors data.
+async function seedAuthors(client, num) {
+  const records = [...Array(num)].map((value, index) => {
+    const id = index + 1;
+    const name = faker.name.fullName();
+    const gender = faker.datatype.boolean();
+    const birthYear = faker.datatype.number({ min: 1900, max: 2000 });
+    let deathYear = birthYear + faker.datatype.number({ min: 20, max: 100 });
+    if (deathYear > 100) {
+      deathYear = undefined;
+    }
+    return {
+      id,
+      name,
+      gender,
+      birthYear,
+      deathYear
+    };
+  });
 
-const ItemSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  pictureUrl: String,
-  price: Number,
-  category: String,
-});
+  const added = await client.author.createMany({
+      data: records,
+      skipDuplicates: true
+  });
 
-const Item = mongoose.model('Item', ItemSchema);
-
-// Routes
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
-    res.status(201).send('User registered');
-  } catch (err) {
-    res.status(500).send('Error registering user');
+  if (added.count > 0) {
+    console.log(`Successfully inserted ${added.count} author records.`);
   }
-});
 
-app.post('/login', passport.authenticate('local', { 
-  successRedirect: '/dashboard',
-  failureRedirect: '/login'
-}));
+  return records;
+}
 
-app.post('/add-item', async (req, res) => {
-  const { title, description, pictureUrl, price, category } = req.body;
-  try {
-    const newItem = new Item({ title, description, pictureUrl, price, category });
-    await newItem.save();
-    res.status(201).send('Item added');
-  } catch (err) {
-    res.status(500).send('Error adding item');
+// Seed books data.
+const bookTypes = Object.keys(BookType);
+async function seedBooks(client, num) {
+  const records = [...Array(num)].map((value, index) => {
+    const id = index + 1;
+    const title = faker.music.songName();
+    const bookTypeIndex = faker.datatype.number({ min: 0, max: bookTypes.length - 1 });
+    const type = bookTypes[bookTypeIndex];
+    const publishedAt = faker.date.between('2000-01-01T00:00:00.000Z', Date.now().toString());
+    const stock = faker.datatype.number({ min: 0, max: 200 });
+    const price = faker.datatype.number({ min: 0, max: 200, precision: 0.01 });
+
+    return {
+      id,
+      title,
+      type,
+      publishedAt,
+      stock,
+      price
+    };
+  });
+
+  const added = await client.book.createMany({
+      data: records,
+      skipDuplicates: true
+  });
+
+  if (added.count > 0) {
+    console.log(`Successfully inserted ${added.count} book records.`);
   }
-});
 
-app.post('/checkout', async (req, res) => {
-  const { amount, token } = req.body;
-  try {
-    const charge = await stripeClient.charges.create({
-      amount,
-      currency: 'usd',
-      source: token,
-      description: 'Charge for rare item',
+  return records;
+}
+
+// Seed books and authors data.
+async function seedBooksAndAuthors(client, books, authors) {
+  const records = books.map((book) => {
+    const authorIndex = faker.datatype.number({ min: 0, max: authors.length - 1 });
+    const author = authors[authorIndex];
+
+    return {
+      bookId: book.id,
+      authorId: author.id
+    }
+  });
+
+  const added = await client.bookAuthor.createMany({
+    data: records,
+    skipDuplicates: true
+  });
+
+  if (added.count > 0) {
+    console.log(`Successfully inserted ${added.count} book and author relation records.`);
+  }
+
+  return records;
+}
+
+// Seed ratings data.
+async function seedRatings(client, books, users) {
+  let total = 0;
+  for (const book of books) {
+    const ratingNum = faker.datatype.number({ min: 10, max: 30});
+    const bookId = book.id;
+    const records = [...Array(ratingNum)].map(() => {
+      const score = faker.datatype.number({ min: 1, max: 5 });
+      const userIndex = faker.datatype.number({ min: 1, max: users.length - 1 });
+      const userId = users[userIndex].id;
+      const ratedAt = faker.date.between(book.publishedAt.toString(), Date.now().toString());
+
+      return {
+        userId,
+        bookId,
+        score,
+        ratedAt
+      }
     });
-    res.status(200).send('Payment successful');
-  } catch (err) {
-    res.status(500).send('Payment error');
-  }
-});
 
-app.get('/items', async (req, res) => {
-  try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (err) {
-    res.status(500).send('Error fetching items');
-  }
-});
+    const added = await client.rating.createMany({
+      data: records,
+      skipDuplicates: true
+    });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+    total += added.count;
+  }
+
+  if (total > 0) {
+    console.log(`Successfully inserted ${total} rating records.`);
+  }
+}
+
+try {
+  await setup();
+  console.log('Setup completed.');
+} catch(error) {
+  console.warn('Database is not ready yet. Skipping seeding...\n', error);
+}
+
+export { setup };
