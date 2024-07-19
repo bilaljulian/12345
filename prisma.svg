@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNull - Rare Items</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="scripts.js"></script>
+</head>
+<body>
+    <header>
+        <h1>eNull - Discover Rare Items</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#items">Items</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="home">
+            <h2>Welcome to eNull</h2>
+            <p>Explore our collection of rare items.</p>
+        </section>
+        <section id="items">
+            <h2>Our Rare Items</h2>
+            <div id="items-container"></div>
+        </section>
+        <section id="about">
+            <h2>About Us</h2>
+            <p>eNull specializes in rare and collectible items.</p>
+        </section>
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form id="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 eNull. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 2rem;
+}
+
+#items-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.item-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 200px;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const itemsContainer = document.getElementById('items-container');
+
+    fetch('/api/items')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.innerHTML = `
+                    <h3>${item.title}</h3>
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width:100%">
+                    <p>${item.description}</p>
+                    <p>$${item.price}</p>
+                `;
+                itemsContainer.appendChild(itemCard);
+            });
+        });
+
+    document.getElementById('contact-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetch('/api/contact', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                alert('Message sent successfully!');
+                event.target.reset();
+            } else {
+                alert('Error sending message.');
+            }
+        });
+    });
+});
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { PrismaClient } = require('@prisma/client');
+
+const app = express();
+const prisma = new PrismaClient();
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+app.get('/api/items', async (req, res) => {
+    const items = await prisma.item.findMany();
+    res.json(items);
+});
+
+app.post('/api/contact', (req, res) => {
+    // Handle contact form submission
+    console.log(req.body);
+    res.status(200).send('Message received');
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+datasource db {
+  provider = "postgresql" // or "mysql", "sqlite", etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Item {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  imageUrl    String
+  price       Float
+}
+npm install express body-parser cors @prisma/client
+npm install prisma --save-dev
+npx prisma generate
+npx prisma migrate dev --name init
