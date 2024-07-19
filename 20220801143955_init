@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNull - Rare Items Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="scripts.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>eNull - Rare Items Marketplace</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#listings">Listings</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section id="home">
+            <h2>Welcome to eNull</h2>
+            <p>Discover and purchase rare items from around the world.</p>
+            <button id="featuredListingsBtn">Featured Listings</button>
+        </section>
+
+        <section id="listings">
+            <h2>Our Listings</h2>
+            <div id="listingContainer"></div>
+        </section>
+
+        <section id="about">
+            <h2>About Us</h2>
+            <p>We specialize in selling rare and unique items.</p>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form id="contactForm">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+
+        <section id="login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" name="loginEmail" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#signup">Sign up</a></p>
+        </section>
+
+        <section id="signup">
+            <h2>Sign Up</h2>
+            <form id="signupForm">
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" name="signupEmail" required>
+                <label for="signupName">Name:</label>
+                <input type="text" id="signupName" name="signupName" required>
+                <label for="signupPhone">Phone:</label>
+                <input type="tel" id="signupPhone" name="signupPhone" required>
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" name="signupPassword" required>
+                <label for="retypePassword">Retype Password:</label>
+                <input type="password" id="retypePassword" name="retypePassword" required>
+                <label for="signupZip">Zip:</label>
+                <input type="text" id="signupZip" name="signupZip" required>
+                <label for="signupCity">City:</label>
+                <input type="text" id="signupCity" name="signupCity" required>
+                <button type="submit">Sign Up</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 eNull. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+/* Reset default browser styles */
+body, h1, h2, p, ul, li, form, input, button, textarea {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 1rem;
+}
+
+header h1 {
+    margin-bottom: 0.5rem;
+}
+
+nav ul {
+    list-style: none;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 1rem;
+}
+
+section {
+    margin-bottom: 1rem;
+}
+
+form {
+    margin-top: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #555;
+}
+
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    // Dynamic Listings Display
+    const listings = [
+        { title: 'Rare Coin', description: 'A rare gold coin from the 19th century.', imageUrl: 'coin.jpg', price: '$500' },
+        { title: 'Vintage Watch', description: 'An antique watch from the 1920s.', imageUrl: 'watch.jpg', price: '$800' },
+        // Add more items as needed
+    ];
+
+    const listingContainer = document.getElementById('listingContainer');
+
+    listings.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'listing-item';
+        itemDiv.innerHTML = `
+            <img src="${item.imageUrl}" alt="${item.title}">
+            <h3>${item.title}</h3>
+            <p>${item.description}</p>
+            <p>Price: ${item.price}</p>
+        `;
+        listingContainer.appendChild(itemDiv);
+    });
+
+    // Contact Form Submission
+    const contactForm = document.getElementById('contactForm');
+    contactForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alert('Your message has been sent.');
+    });
+
+    // Login Form Submission
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alert('Login successful.');
+    });
+
+    // Signup Form Submission
+    const signupForm = document.getElementById('signupForm');
+    signupForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alert('Signup successful.');
+    });
+
+    // Featured Listings Button
+    const featuredListingsBtn = document.getElementById('featuredListingsBtn');
+    featuredListingsBtn.addEventListener('click', () => {
+        alert('Displaying featured listings.');
+    });
+});
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// Routes
+app.post('/contact', (req, res) => {
+    // Handle contact form submission
+    console.log('Contact form data:', req.body);
+    res.json({ message: 'Message received' });
+});
+
+app.post('/login', (req, res) => {
+    // Handle login form submission
+    console.log('Login data:', req.body);
+    res.json({ message: 'Login successful' });
+});
+
+app.post('/signup', (req, res) => {
+    // Handle signup form submission
+    console.log('Signup data:', req.body);
+    res.json({ message: 'Signup successful' });
+});
+
+// Start Server
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+    try {
+        await mongoose.connect('mongodb://localhost:27017/enull', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('MongoDB connected');
+    } catch (err) {
+        console.error(err.message);
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
